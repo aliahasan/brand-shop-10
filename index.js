@@ -35,10 +35,27 @@ async function run() {
 
 
     const productCollection = client.db('productDB').collection('products')
+    const cartCollection = client.db('cartDB').collection('cartItem')
 
 
-    app.get('/products' , async (req, res) =>{
-      const cursor = productCollection.find()
+
+    app.post('/cartProducts', async (req, res) =>{
+      const cartProduct = req.body
+      const result = await cartCollection.insertOne(cartProduct)
+      res.send(result)
+    })
+
+
+    app.delete('/cartProducts/:id', async(req, res)=>{
+      const id = req.params.id;
+      const query = { _id: id};
+      const result = await cartCollection.deleteOne(query)
+      res.send(result)
+    })
+    
+
+    app.get('/cartProducts' , async (req, res)=>{
+      const cursor = cartCollection.find()
       const result = await cursor.toArray()
       res.send(result)
     })
@@ -50,6 +67,55 @@ async function run() {
     });
 
 
+    app.get('/products' , async (req, res) =>{
+      const cursor = productCollection.find()
+      const result = await cursor.toArray()
+      res.send(result)
+    })
+
+    
+
+    app.get('/products/:id' , async(req, res) =>{
+      const id = req.params.id;
+      const query = {_id:  new ObjectId(id)}
+      const result =await productCollection.findOne(query)
+      res.send(result)
+      
+    })
+
+    
+    app.get('/products/:id' , async(req, res) =>{
+      const id = req.params.id;
+      const query = {_id:  new ObjectId(id)}
+      const result =await productCollection.findOne(query)
+      res.send(result)
+      
+    })
+
+    app.put('/products/:id' , async(req, res) =>{
+      const id = req.params.id;
+      const filter = {_id:  new ObjectId(id)}
+      const options = {upsert:true}
+      const updateProduct =req.body
+      const updateItem = {
+        $set:{
+            name:updateProduct.name,
+            brand:updateProduct.brand,
+            type:updateProduct.type,
+            price:updateProduct.price,
+            rating:updateProduct.rating,
+            description:updateProduct.description,
+            photo:updateProduct.photo
+        }
+      }
+     
+      const result = await productCollection.updateOne(filter,updateItem, options)
+      res.send(result)
+      
+    })
+
+
+    
 
 
 
@@ -57,10 +123,7 @@ async function run() {
 
 
 
-
-
-
-
+ 
 
 
 
