@@ -12,9 +12,6 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// brandShop
-// cgDuv1HdnQQ4W9Ii
-
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.cqhoysn.mongodb.net/?retryWrites=true&w=majority`;
@@ -38,13 +35,23 @@ async function run() {
     const cartCollection = client.db('cartDB').collection('cartItem')
 
 
+    
+    app.get('/cartProducts' , async (req, res)=>{
+      const cursor = cartCollection.find()
+      const result = await cursor.toArray()
+      res.send(result)
+      
+    })
+
 
     app.post('/cartProducts', async (req, res) =>{
       const cartProduct = req.body
       const result = await cartCollection.insertOne(cartProduct)
       res.send(result)
+      
     })
 
+  
 
     app.delete('/cartProducts/:id', async(req, res)=>{
       const id = req.params.id;
@@ -54,11 +61,6 @@ async function run() {
     })
     
 
-    app.get('/cartProducts' , async (req, res)=>{
-      const cursor = cartCollection.find()
-      const result = await cursor.toArray()
-      res.send(result)
-    })
 
     app.post("/products", async (req, res) => {
       const newProducts = req.body;
@@ -114,26 +116,6 @@ async function run() {
       
     })
 
-
-    
-
-
-
-
-
-
-
- 
-
-
-
-
-
-
-
-
-
-    
    
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
